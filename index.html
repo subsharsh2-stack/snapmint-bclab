@@ -41,10 +41,8 @@ body{font-family:var(--font);font-size:13px;line-height:1.5;background:var(--pag
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:99px}
 
-/* ── SHELL ── */
 #shell{display:grid;grid-template-rows:var(--bar-h) 1fr;grid-template-columns:var(--nav-w) 1fr;grid-template-areas:"bar bar""nav view";height:100vh}
 
-/* ── TOP BAR ── */
 #bar{grid-area:bar;height:var(--bar-h);background:rgba(255,255,255,0.88);backdrop-filter:saturate(200%) blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px 0 0;z-index:90}
 .bar-brand{width:var(--nav-w);height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);flex-shrink:0}
 .bar-logo{width:30px;height:30px;background:var(--brand);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:bold;transition:transform .2s var(--spring);cursor:default;box-shadow:0 2px 8px rgba(1,71,81,0.3)}
@@ -53,18 +51,14 @@ body{font-family:var(--font);font-size:13px;line-height:1.5;background:var(--pag
 .bar-wordmark em{color:var(--brand);font-style:normal}
 .bar-sub{font-size:10px;font-weight:500;color:var(--t4);letter-spacing:0.3px;padding:2px 8px;background:var(--s3);border:1px solid var(--border);border-radius:var(--pill)}
 
-/* ── ICON NAV ── */
 #nav{grid-area:nav;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px}
 .nav-icon-btn{width:38px;height:38px;border-radius:var(--r5);border:none;background:var(--s3);color:var(--brand);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-/* ── VIEW AREA ── */
 #view{grid-area:view;display:flex;overflow:hidden;position:relative}
 
-/* ── STUDIO PANEL ── */
 .studio-sidebar{width:var(--sidebar);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
 .studio-canvas{flex:1;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;padding:40px}
 
-/* Sidebar inner */
 .sb-head{padding:18px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--s2)}
 .sb-title{font-size:16px;font-weight:700;letter-spacing:-.4px}
 .sb-sub{font-size:11px;color:var(--t3);margin-top:2px}
@@ -82,12 +76,10 @@ select.ctrl{appearance:none;cursor:pointer;background-image:url("data:image/svg+
 .gen-btn:hover{background:var(--fire2);transform:translateY(-1px);box-shadow:0 6px 16px var(--fglow)}
 .gen-btn:active{transform:scale(.98)}
 
-/* Canvas Preview */
 .canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r6);padding:24px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:24px;align-items:center;width:100%;max-width:800px}
 .canvas-lbl{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;text-align:center}
 canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--sh-sm);background:#fff}
 
-/* Hidden canvas for high-res rendering */
 #renderCanvas { display: none; }
 </style>
 </head>
@@ -169,7 +161,6 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
 <canvas id="renderCanvas" width="1050" height="600"></canvas>
 
 <script>
-// Vector Paths for Icons
 const ICONS = {
   phone: new Path2D("M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"),
   mail: new Path2D("M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"),
@@ -179,17 +170,15 @@ const ICONS = {
 
 const BRAND_COLOR = "#014751";
 
-// Fetching assets dynamically relative to the HTML file
 let logoImg = new Image();
 let logoWhiteImg = new Image();
 
-// Boot
 window.onload = () => {
-  logoImg.src = "./SNAPMINT.svg"; 
+  // Directly targeting your exact PNG files
+  logoImg.src = "./Snapmint_Logo PNG.png"; 
   logoWhiteImg.src = "./Snapmint_white-logo.png"; 
   
   document.fonts.ready.then(() => {
-    // Render once images are loaded
     let loaded = 0;
     const checkLoad = () => {
       loaded++;
@@ -198,12 +187,10 @@ window.onload = () => {
     logoImg.onload = checkLoad;
     logoWhiteImg.onload = checkLoad;
     
-    // Safety fallback in case images load instantly
     if(logoImg.complete && logoWhiteImg.complete) renderCard();
   });
 };
 
-// Smart Auto-Wrapper for Canvas Text
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(/[ \n]/);
   let line = '';
@@ -248,25 +235,32 @@ function drawCard(canvasId, isFront) {
   if (!isFront) {
     const backStyle = document.getElementById('f-back').value;
     const centerLogo = backStyle === 'dark' ? logoWhiteImg : logoImg;
-    const lw = 500; // Increased back logo size significantly
+    const lw = 500; 
     const lh = centerLogo.height * (lw / centerLogo.width);
     ctx.drawImage(centerLogo, (1050 - lw)/2, (600 - lh)/2, lw, lh);
     return canvas.toDataURL('image/png', 1.0);
   }
   
   // RENDER FRONT
-  // Top right logo alignment
-  const lw = 280;
-  const lh = logoImg.height * (lw / logoImg.width);
-  const logoX = 1050 - 80 - lw; // Anchored to 80px from the right edge
-  ctx.drawImage(logoImg, logoX, 80, lw, lh);
   
-  // Perfectly aligned subtext beneath logo
+  // Top right logo alignment - Strictly aligned with contact icons
+  const logoX = 600;
+  let lw = 260;
+  let lh = logoImg.height * (lw / logoImg.width);
+
+  // Constraint: Prevents massive transparent padding from pushing the logo down
+  if (lh > 80) {
+    lh = 80;
+    lw = logoImg.width * (lh / logoImg.height);
+  }
+
+  ctx.drawImage(logoImg, logoX, 60, lw, lh);
+  
   ctx.fillStyle = "#3A3A40";
-  ctx.font = "400 18px Inter";
+  ctx.font = "400 17px Inter";
   ctx.textBaseline = "top";
-  ctx.textAlign = "left"; // Aligning left relative to the logo's starting X
-  ctx.fillText("Snapmint Financial Services Pvt Ltd", logoX + 5, 80 + lh + 12);
+  ctx.textAlign = "left"; 
+  ctx.fillText("Snapmint Financial Services Pvt Ltd", logoX + 5, 60 + lh + 12);
 
   // Divider Line
   ctx.beginPath();
@@ -305,7 +299,7 @@ function drawCard(canvasId, isFront) {
   
   if(phone) {
     drawIcon(ctx, ICONS.phone, iconX, currentInfoY);
-    ctx.fillStyle = "#000000"; // Pure black text
+    ctx.fillStyle = "#000000"; 
     ctx.fillText(phone, textX, currentInfoY + 2);
     currentInfoY += spacing;
   }
