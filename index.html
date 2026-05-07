@@ -125,7 +125,7 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
     flex-shrink: 0;
   }
   .sb-foot {
-    position: static; /* Let it flow naturally between form and canvas on mobile */
+    position: static; 
     padding: 16px 20px;
   }
   .studio-canvas {
@@ -160,7 +160,7 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
   <div class="studio-sidebar">
     <div class="sb-head">
       <div class="sb-title">Card Studio</div>
-      <div class="sb-sub">Live preview auto-scales to fit</div>
+      <div class="sb-sub">Live preview updates automatically</div>
     </div>
     
     <div class="auto-block">
@@ -443,29 +443,19 @@ function drawCard(canvasId, isFront) {
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  // Front Left Content
+  // Front Left Content (Fixed Font Sizes)
   ctx.textAlign = "left";
   const name = document.getElementById('f-name').value;
   const desig = document.getElementById('f-desig').value;
 
-  let nameSize = 68;
-  ctx.font = `800 ${nameSize}px Inter`;
-  while (ctx.measureText(name).width > 440 && nameSize > 36) {
-    nameSize -= 2;
-    ctx.font = `800 ${nameSize}px Inter`;
-  }
+  ctx.font = "800 68px Inter";
   ctx.fillStyle = BRAND_COLOR;
   ctx.textBaseline = "top";
-  let nextY = wrapText(ctx, name, 80, 230, 440, nameSize + 7);
+  let nextY = wrapText(ctx, name, 80, 230, 440, 68 + 7);
 
-  let desigSize = 30;
-  ctx.font = `600 ${desigSize}px Inter`;
-  while (ctx.measureText(desig.split('\n')[0]).width > 440 && desigSize > 20) {
-    desigSize -= 1;
-    ctx.font = `600 ${desigSize}px Inter`;
-  }
+  ctx.font = "600 30px Inter";
   ctx.fillStyle = "#3A3A40";
-  wrapText(ctx, desig, 80, nextY + 10, 440, desigSize + 10);
+  wrapText(ctx, desig, 80, nextY + 10, 440, 30 + 10);
 
   // Front Right Details
   const phone = document.getElementById('f-phone').value;
