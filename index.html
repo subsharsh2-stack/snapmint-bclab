@@ -80,9 +80,12 @@ html,body{height:100%;overflow:hidden;background:var(--page);color:var(--text);f
 textarea.ctrl{resize:vertical;min-height:80px;line-height:1.4}
 select.ctrl{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%233A3A40' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px}
 
-/* Toggle Switch */
-.toggle-wrap { display: flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 600; color: var(--fire); text-transform: none; letter-spacing: 0; cursor: pointer;}
-.toggle-wrap input { cursor: pointer; accent-color: var(--fire); }
+/* Custom Email Input Group */
+.email-input-group { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--r5); transition: all .2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.email-input-group:hover { border-color: rgba(0,0,0,0.2); }
+.email-input-group:focus-within { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(1,71,81,0.1); }
+.email-input-group .ctrl { border: none; box-shadow: none; border-radius: 0; background: transparent; flex: 1; min-width: 0; padding-right: 4px; }
+.email-suffix { padding-right: 14px; font-size: 13px; font-weight: 500; color: var(--t4); user-select: none; white-space: nowrap; }
 
 .sb-foot{padding:20px;border-top:1px solid var(--border);background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:sticky;bottom:0;z-index:10}
 .gen-btn{width:100%;height:46px;border-radius:var(--r5);border:none;background:var(--brand);color:#fff;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .3s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(1,71,81,0.25)}
@@ -101,6 +104,41 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
 .toast.success { background: var(--brand); }
 
 #renderCanvas { display: none; }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  #shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--bar-h) 1fr;
+    grid-template-areas: "bar" "view";
+  }
+  #nav { display: none; }
+  #view {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .studio-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow: visible; 
+    flex-shrink: 0;
+  }
+  .sb-foot {
+    position: static; /* Let it flow naturally between form and canvas on mobile */
+    padding: 16px 20px;
+  }
+  .studio-canvas {
+    width: 100%;
+    padding: 32px 20px;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+  .canvas-wrap {
+    padding: 20px;
+    gap: 24px;
+  }
+}
 </style>
 </head>
 <body>
@@ -126,7 +164,6 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
     </div>
     
     <div class="auto-block">
-      <button class="btn-secondary" onclick="magicPaste()">🪄 Magic Paste from Clipboard</button>
       <button class="btn-secondary" onclick="document.getElementById('csv-upload').click()">📁 Batch Generate via CSV</button>
       <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="processCSV(event)">
     </div>
@@ -134,7 +171,7 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
     <div class="sb-body">
       <div class="field">
         <label class="flbl">Full Name</label>
-        <input type="text" class="ctrl" id="f-name" value="Harsh Vishwakarma" oninput="handleNameInput(); renderCard()">
+        <input type="text" class="ctrl" id="f-name" value="Harsh Vishwakarma" oninput="renderCard()">
       </div>
       <div class="field">
         <label class="flbl">Designation</label>
@@ -145,11 +182,11 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
         <input type="text" class="ctrl" id="f-phone" placeholder="+91 00000 00000" oninput="formatPhone(); renderCard()">
       </div>
       <div class="field">
-        <label class="flbl">
-          Email Address
-          <label class="toggle-wrap"><input type="checkbox" id="auto-email-toggle" checked> Auto-fill</label>
-        </label>
-        <input type="text" class="ctrl" id="f-email" placeholder="name@snapmint.com" oninput="saveState(); renderCard()">
+        <label class="flbl">Email Address</label>
+        <div class="email-input-group">
+          <input type="text" class="ctrl" id="f-email" placeholder="name" oninput="saveState(); renderCard()">
+          <span class="email-suffix">@snapmint.com</span>
+        </div>
       </div>
       <div class="field">
         <label class="flbl">Website</label>
@@ -222,7 +259,7 @@ window.onload = () => {
 
 function loadState() {
   document.getElementById('f-phone').value = localStorage.getItem('bc_phone') || "+91 96536 75562";
-  document.getElementById('f-email').value = localStorage.getItem('bc_email') || "rawhaan.wani@snapmint.com";
+  document.getElementById('f-email').value = localStorage.getItem('bc_email') || "rawhaan.wani";
   document.getElementById('f-web').value = localStorage.getItem('bc_web') || "www.snapmint.com";
   document.getElementById('f-addr').value = localStorage.getItem('bc_addr') || "Unit No. B-101, 1st Floor, Tower B, Unitech Cyber Park, Sector 39, Gurugram 122003";
   document.getElementById('f-back').value = localStorage.getItem('bc_back') || "dark";
@@ -263,52 +300,6 @@ function formatPhone() {
   localStorage.setItem('bc_phone', val);
 }
 
-function handleNameInput() {
-  if (document.getElementById('auto-email-toggle').checked) {
-    const name = document.getElementById('f-name').value.trim().toLowerCase();
-    const parts = name.split(/\s+/);
-    let email = "";
-    if (parts.length >= 2) email = `${parts[0]}.${parts[parts.length-1]}@snapmint.com`;
-    else if (parts.length === 1 && parts[0] !== "") email = `${parts[0]}@snapmint.com`;
-    
-    document.getElementById('f-email').value = email;
-    saveState();
-  }
-}
-
-async function magicPaste() {
-  try {
-    // Note: Clipboard API requires the site to be served over HTTPS (like GitHub Pages)
-    const text = await navigator.clipboard.readText();
-    if (!text) return toast("Clipboard is empty", "error");
-
-    // Extract Email
-    const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-    if (emailMatch) document.getElementById('f-email').value = emailMatch[1];
-
-    // Extract Phone
-    const phoneMatch = text.match(/(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/);
-    if (phoneMatch) {
-      document.getElementById('f-phone').value = phoneMatch[0];
-      formatPhone();
-    }
-
-    // Attempt Name & Title from first two lines
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    if (lines.length > 0 && (!emailMatch || !emailMatch[0].includes(lines[0]))) {
-      document.getElementById('f-name').value = lines[0];
-    }
-    if (lines.length > 1 && (!emailMatch || !emailMatch[0].includes(lines[1]))) {
-      document.getElementById('f-desig').value = lines[1];
-    }
-
-    renderCard();
-    toast("Magic Paste Applied!");
-  } catch (err) {
-    alert("Please allow clipboard permissions in your browser to use Magic Paste.");
-  }
-}
-
 function processCSV(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -316,11 +307,9 @@ function processCSV(event) {
   const reader = new FileReader();
   reader.onload = async (e) => {
     const text = e.target.result;
-    // Simple CSV parser (splits by newline, then comma)
     const rows = text.split('\n').map(r => r.split(','));
     const headers = rows.shift().map(h => h.trim().toLowerCase());
     
-    // Find column indexes
     const nameIdx = headers.findIndex(h => h.includes('name'));
     const desigIdx = headers.findIndex(h => h.includes('designation') || h.includes('title'));
     const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile'));
@@ -337,7 +326,6 @@ function processCSV(event) {
     for (let row of rows) {
       if (row.length < 2 || !row[nameIdx]) continue;
       
-      // Inject data into fields to utilize existing render engine
       document.getElementById('f-name').value = row[nameIdx].trim();
       if (desigIdx !== -1 && row[desigIdx]) document.getElementById('f-desig').value = row[desigIdx].trim();
       if (phoneIdx !== -1 && row[phoneIdx]) {
@@ -345,12 +333,16 @@ function processCSV(event) {
         formatPhone();
       }
       if (emailIdx !== -1 && row[emailIdx]) {
-        document.getElementById('f-email').value = row[emailIdx].trim();
+        let emailRaw = row[emailIdx].trim();
+        if (emailRaw.includes('@')) emailRaw = emailRaw.split('@')[0];
+        document.getElementById('f-email').value = emailRaw;
       } else {
-        handleNameInput(); // Auto-gen email if missing in CSV
+        const parts = row[nameIdx].trim().toLowerCase().split(/\s+/);
+        if (parts.length >= 2) document.getElementById('f-email').value = `${parts[0]}.${parts[parts.length-1]}`;
+        else if (parts.length === 1) document.getElementById('f-email').value = parts[0];
+        else document.getElementById('f-email').value = "";
       }
 
-      // Generate the PDF for this row
       const frontData = drawCard('renderCanvas', true);
       const backData = drawCard('renderCanvas', false);
       
@@ -374,9 +366,8 @@ function processCSV(event) {
       toast(`✅ Successfully zipped ${count} business cards!`);
     }
     
-    // Reset file input
     event.target.value = '';
-    renderCard(); // Render final state back to UI
+    renderCard();
   };
   reader.readAsText(file);
 }
@@ -478,7 +469,8 @@ function drawCard(canvasId, isFront) {
 
   // Front Right Details
   const phone = document.getElementById('f-phone').value;
-  const email = document.getElementById('f-email').value;
+  const emailPrefix = document.getElementById('f-email').value.trim();
+  const email = emailPrefix ? `${emailPrefix}@snapmint.com` : "";
   const web = document.getElementById('f-web').value;
   const addr = document.getElementById('f-addr').value;
 
