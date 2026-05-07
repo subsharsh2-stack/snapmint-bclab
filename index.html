@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root {
   --brand:    #014751;
@@ -26,59 +27,78 @@
   --fire2:    #FF8547;
   --fglow:    rgba(255,107,43,0.18);
   --nav-w:    52px;
-  --sidebar:  320px;
-  --bar-h:    50px;
-  --r4:8px; --r5:10px; --r6:12px; --pill:999px;
+  --sidebar:  340px;
+  --bar-h:    54px;
+  --r4:8px; --r5:10px; --r6:14px; --pill:999px;
   --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
   --sh-sm: 0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);
-  --sh-lg: 0 12px 40px rgba(0,0,0,0.12),0 4px 12px rgba(0,0,0,0.05);
+  --sh-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --sh-lg: 0 16px 40px rgba(0,0,0,0.08),0 6px 16px rgba(0,0,0,0.04);
   --spring: cubic-bezier(0.34,1.56,0.64,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{font-family:var(--font);font-size:13px;line-height:1.5;background:var(--page);color:var(--text);-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;background:var(--page);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:99px}
 
 #shell{display:grid;grid-template-rows:var(--bar-h) 1fr;grid-template-columns:var(--nav-w) 1fr;grid-template-areas:"bar bar""nav view";height:100vh}
 
-#bar{grid-area:bar;height:var(--bar-h);background:rgba(255,255,255,0.88);backdrop-filter:saturate(200%) blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px 0 0;z-index:90}
+#bar{grid-area:bar;height:var(--bar-h);background:rgba(255,255,255,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px 0 0;z-index:100}
 .bar-brand{width:var(--nav-w);height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);flex-shrink:0}
-.bar-logo{width:30px;height:30px;background:var(--brand);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:bold;transition:transform .2s var(--spring);cursor:default;box-shadow:0 2px 8px rgba(1,71,81,0.3)}
-.bar-center{flex:1;display:flex;align-items:center;gap:10px;padding:0 18px}
-.bar-wordmark{font-size:15px;font-weight:800;letter-spacing:-0.6px;color:var(--text)}
+.bar-logo{width:32px;height:32px;background:var(--brand);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:800;box-shadow:0 2px 8px rgba(1,71,81,0.25)}
+.bar-center{flex:1;display:flex;align-items:center;gap:12px;padding:0 20px}
+.bar-wordmark{font-size:16px;font-weight:800;letter-spacing:-0.5px}
 .bar-wordmark em{color:var(--brand);font-style:normal}
-.bar-sub{font-size:10px;font-weight:500;color:var(--t4);letter-spacing:0.3px;padding:2px 8px;background:var(--s3);border:1px solid var(--border);border-radius:var(--pill)}
+.bar-sub{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:0.5px;padding:3px 10px;background:var(--s3);border:1px solid var(--border);border-radius:var(--pill);text-transform:uppercase}
 
-#nav{grid-area:nav;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px}
-.nav-icon-btn{width:38px;height:38px;border-radius:var(--r5);border:none;background:var(--s3);color:var(--brand);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#nav{grid-area:nav;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px}
+.nav-icon-btn{width:36px;height:36px;border-radius:var(--r4);border:none;background:var(--s2);color:var(--brand);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s ease}
+.nav-icon-btn.active{background:rgba(1,71,81,0.1);box-shadow:inset 0 0 0 1px rgba(1,71,81,0.2)}
 
 #view{grid-area:view;display:flex;overflow:hidden;position:relative}
 
-.studio-sidebar{width:var(--sidebar);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
-.studio-canvas{flex:1;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;padding:40px}
+.studio-sidebar{width:var(--sidebar);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;position:relative;}
+.studio-canvas{flex:1;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:48px 40px}
 
-.sb-head{padding:18px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--s2)}
-.sb-title{font-size:16px;font-weight:700;letter-spacing:-.4px}
-.sb-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.sb-head{padding:24px 20px 20px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--s2)}
+.sb-title{font-size:17px;font-weight:700;letter-spacing:-.4px}
+.sb-sub{font-size:12px;color:var(--t3);margin-top:4px}
 
-.sb-body{flex:1;padding:18px}
-.field{margin-bottom:14px}
-.flbl{display:block;font-size:10px;font-weight:700;color:var(--t3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.ctrl{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r4);padding:9px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:all .12s}
-.ctrl:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(1,71,81,0.1)}
-textarea.ctrl{resize:vertical;min-height:70px}
-select.ctrl{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ABABBA' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+/* Automation Actions Block */
+.auto-block { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+.btn-secondary { width: 100%; height: 34px; border-radius: var(--r4); border: 1px solid var(--border2); background: var(--s2); color: var(--text); font-size: 12px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-secondary:hover { background: var(--s3); border-color: var(--t4); }
+.btn-secondary:active { transform: scale(0.98); }
 
-.sb-foot{padding:16px 18px;border-top:1px solid var(--border);background:rgba(255,255,255,.9);backdrop-filter:blur(10px);position:sticky;bottom:0}
-.gen-btn{width:100%;height:44px;border-radius:var(--r5);border:none;background:var(--fire);color:#fff;font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .2s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px var(--fglow)}
-.gen-btn:hover{background:var(--fire2);transform:translateY(-1px);box-shadow:0 6px 16px var(--fglow)}
+.sb-body{flex:1;padding:24px 20px}
+.field{margin-bottom:18px;position:relative}
+.flbl{display:flex; justify-content: space-between; font-size:10px;font-weight:700;color:var(--t3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
+.ctrl{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r5);padding:10px 14px;color:var(--text);font-size:13px;font-family:var(--font);font-weight:500;outline:none;transition:all .2s ease;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+.ctrl:hover{border-color:rgba(0,0,0,0.2)}
+.ctrl:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(1,71,81,0.1)}
+textarea.ctrl{resize:vertical;min-height:80px;line-height:1.4}
+select.ctrl{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%233A3A40' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px}
+
+/* Toggle Switch */
+.toggle-wrap { display: flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 600; color: var(--fire); text-transform: none; letter-spacing: 0; cursor: pointer;}
+.toggle-wrap input { cursor: pointer; accent-color: var(--fire); }
+
+.sb-foot{padding:20px;border-top:1px solid var(--border);background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:sticky;bottom:0;z-index:10}
+.gen-btn{width:100%;height:46px;border-radius:var(--r5);border:none;background:var(--brand);color:#fff;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .3s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(1,71,81,0.25)}
+.gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(1,71,81,0.35);background:#025c68}
 .gen-btn:active{transform:scale(.98)}
 
-.canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r6);padding:24px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:24px;align-items:center;width:100%;max-width:800px}
-.canvas-lbl{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;text-align:center}
-canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--sh-sm);background:#fff}
+.canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r6);padding:32px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:32px;align-items:center;width:100%;max-width:880px;margin-bottom:40px}
+.canvas-section{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+.canvas-lbl{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;width:100%;text-align:left;border-bottom:1px solid var(--s3);padding-bottom:8px}
+canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--sh-md);background:#fff;border-radius:2px}
+
+/* Toasts */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px; pointer-events: none;}
+.toast{background:var(--text);color:#fff;padding:12px 18px;border-radius:var(--r5);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);transform:translateY(20px);opacity:0;transition:all 0.3s var(--spring); display: flex; align-items: center; gap: 8px;}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success { background: var(--brand); }
 
 #renderCanvas { display: none; }
 </style>
@@ -90,25 +110,31 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
   <div class="bar-brand"><div class="bar-logo">B</div></div>
   <div class="bar-center">
     <span class="bar-wordmark">BC<em>LAB</em></span>
-    <span class="bar-sub">HR Online Portal</span>
+    <span class="bar-sub">Pro HR OS</span>
   </div>
 </div>
 
 <nav id="nav">
-  <button class="nav-icon-btn" title="Business Cards">📇</button>
+  <button class="nav-icon-btn active" title="Business Cards">📇</button>
 </nav>
 
 <div id="view">
   <div class="studio-sidebar">
     <div class="sb-head">
-      <div class="sb-title">Employee Details</div>
-      <div class="sb-sub">Live preview updates automatically</div>
+      <div class="sb-title">Card Studio</div>
+      <div class="sb-sub">Live preview auto-scales to fit</div>
     </div>
+    
+    <div class="auto-block">
+      <button class="btn-secondary" onclick="magicPaste()">🪄 Magic Paste from Clipboard</button>
+      <button class="btn-secondary" onclick="document.getElementById('csv-upload').click()">📁 Batch Generate via CSV</button>
+      <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="processCSV(event)">
+    </div>
+
     <div class="sb-body">
-      
       <div class="field">
         <label class="flbl">Full Name</label>
-        <input type="text" class="ctrl" id="f-name" value="Harsh Vishwakarma" oninput="renderCard()">
+        <input type="text" class="ctrl" id="f-name" value="Harsh Vishwakarma" oninput="handleNameInput(); renderCard()">
       </div>
       <div class="field">
         <label class="flbl">Designation</label>
@@ -116,23 +142,26 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
       </div>
       <div class="field">
         <label class="flbl">Phone Number</label>
-        <input type="text" class="ctrl" id="f-phone" value="+91 96536 75562" oninput="renderCard()">
+        <input type="text" class="ctrl" id="f-phone" placeholder="+91 00000 00000" oninput="formatPhone(); renderCard()">
       </div>
       <div class="field">
-        <label class="flbl">Email Address</label>
-        <input type="text" class="ctrl" id="f-email" value="rawhaan.wani@snapmint.com" oninput="renderCard()">
+        <label class="flbl">
+          Email Address
+          <label class="toggle-wrap"><input type="checkbox" id="auto-email-toggle" checked> Auto-fill</label>
+        </label>
+        <input type="text" class="ctrl" id="f-email" placeholder="name@snapmint.com" oninput="saveState(); renderCard()">
       </div>
       <div class="field">
         <label class="flbl">Website</label>
-        <input type="text" class="ctrl" id="f-web" value="www.snapmint.com" oninput="renderCard()">
+        <input type="text" class="ctrl" id="f-web" oninput="saveState(); renderCard()">
       </div>
       <div class="field">
         <label class="flbl">Office Address</label>
-        <textarea class="ctrl" id="f-addr" style="min-height:90px" oninput="renderCard()">Unit No. B-101, 1st Floor, Tower B, Unitech Cyber Park, Sector 39, Gurugram 122003</textarea>
+        <textarea class="ctrl" id="f-addr" oninput="saveState(); renderCard()"></textarea>
       </div>
-      <div class="field" style="margin-top:24px">
+      <div class="field" style="margin-top:28px">
         <label class="flbl">Card Back Design</label>
-        <select class="ctrl" id="f-back" onchange="renderCard()">
+        <select class="ctrl" id="f-back" onchange="saveState(); renderCard()">
           <option value="dark">Solid Brand Green (#014751)</option>
           <option value="white">Clean White</option>
         </select>
@@ -145,11 +174,11 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
 
   <div class="studio-canvas">
     <div class="canvas-wrap">
-      <div>
+      <div class="canvas-section">
         <div class="canvas-lbl">Front Preview</div>
         <canvas id="preview-front" width="1050" height="600"></canvas>
       </div>
-      <div style="width:100%">
+      <div class="canvas-section">
         <div class="canvas-lbl">Back Preview</div>
         <canvas id="preview-back" width="1050" height="600"></canvas>
       </div>
@@ -158,9 +187,11 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
 </div>
 </div>
 
+<div class="toast-wrap" id="toasts"></div>
 <canvas id="renderCanvas" width="1050" height="600"></canvas>
 
 <script>
+// --- CORE DATA & STATE ---
 const ICONS = {
   phone: new Path2D("M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"),
   mail: new Path2D("M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"),
@@ -169,11 +200,11 @@ const ICONS = {
 };
 
 const BRAND_COLOR = "#014751";
-
 let logoImg = new Image();
 let logoWhiteImg = new Image();
 
 window.onload = () => {
+  loadState();
   logoImg.src = "./Snapmint_Logo PNG.png"; 
   logoWhiteImg.src = "./Snapmint_white-logo.png"; 
   
@@ -185,28 +216,184 @@ window.onload = () => {
     };
     logoImg.onload = checkLoad;
     logoWhiteImg.onload = checkLoad;
-    
     if(logoImg.complete && logoWhiteImg.complete) renderCard();
   });
 };
 
+function loadState() {
+  document.getElementById('f-phone').value = localStorage.getItem('bc_phone') || "+91 96536 75562";
+  document.getElementById('f-email').value = localStorage.getItem('bc_email') || "rawhaan.wani@snapmint.com";
+  document.getElementById('f-web').value = localStorage.getItem('bc_web') || "www.snapmint.com";
+  document.getElementById('f-addr').value = localStorage.getItem('bc_addr') || "Unit No. B-101, 1st Floor, Tower B, Unitech Cyber Park, Sector 39, Gurugram 122003";
+  document.getElementById('f-back').value = localStorage.getItem('bc_back') || "dark";
+}
+
+function saveState() {
+  localStorage.setItem('bc_email', document.getElementById('f-email').value);
+  localStorage.setItem('bc_web', document.getElementById('f-web').value);
+  localStorage.setItem('bc_addr', document.getElementById('f-addr').value);
+  localStorage.setItem('bc_back', document.getElementById('f-back').value);
+}
+
+// --- UI UTILS ---
+function toast(msg, type='success') {
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='success'?'✓':'ℹ'}</span> ${msg}`;
+  wrap.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+// --- AUTOMATIONS ---
+function formatPhone() {
+  const input = document.getElementById('f-phone');
+  let val = input.value.replace(/[^\d+]/g, ''); 
+  if (val.length === 10 && !val.startsWith('+')) val = '+91' + val;
+  if (val.startsWith('+91') && val.length > 3) {
+    const core = val.slice(3);
+    if (core.length > 5) val = `+91 ${core.slice(0,5)} ${core.slice(5, 10)}`;
+    else val = `+91 ${core}`;
+  }
+  input.value = val;
+  localStorage.setItem('bc_phone', val);
+}
+
+function handleNameInput() {
+  if (document.getElementById('auto-email-toggle').checked) {
+    const name = document.getElementById('f-name').value.trim().toLowerCase();
+    const parts = name.split(/\s+/);
+    let email = "";
+    if (parts.length >= 2) email = `${parts[0]}.${parts[parts.length-1]}@snapmint.com`;
+    else if (parts.length === 1 && parts[0] !== "") email = `${parts[0]}@snapmint.com`;
+    
+    document.getElementById('f-email').value = email;
+    saveState();
+  }
+}
+
+async function magicPaste() {
+  try {
+    // Note: Clipboard API requires the site to be served over HTTPS (like GitHub Pages)
+    const text = await navigator.clipboard.readText();
+    if (!text) return toast("Clipboard is empty", "error");
+
+    // Extract Email
+    const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+    if (emailMatch) document.getElementById('f-email').value = emailMatch[1];
+
+    // Extract Phone
+    const phoneMatch = text.match(/(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/);
+    if (phoneMatch) {
+      document.getElementById('f-phone').value = phoneMatch[0];
+      formatPhone();
+    }
+
+    // Attempt Name & Title from first two lines
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length > 0 && (!emailMatch || !emailMatch[0].includes(lines[0]))) {
+      document.getElementById('f-name').value = lines[0];
+    }
+    if (lines.length > 1 && (!emailMatch || !emailMatch[0].includes(lines[1]))) {
+      document.getElementById('f-desig').value = lines[1];
+    }
+
+    renderCard();
+    toast("Magic Paste Applied!");
+  } catch (err) {
+    alert("Please allow clipboard permissions in your browser to use Magic Paste.");
+  }
+}
+
+function processCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const text = e.target.result;
+    // Simple CSV parser (splits by newline, then comma)
+    const rows = text.split('\n').map(r => r.split(','));
+    const headers = rows.shift().map(h => h.trim().toLowerCase());
+    
+    // Find column indexes
+    const nameIdx = headers.findIndex(h => h.includes('name'));
+    const desigIdx = headers.findIndex(h => h.includes('designation') || h.includes('title'));
+    const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile'));
+    const emailIdx = headers.findIndex(h => h.includes('email'));
+
+    if (nameIdx === -1) return alert("CSV must have a 'Name' column.");
+
+    toast(`Processing ${rows.length} cards... Please wait.`, "info");
+    
+    const zip = new JSZip();
+    const { jsPDF } = window.jspdf;
+    let count = 0;
+
+    for (let row of rows) {
+      if (row.length < 2 || !row[nameIdx]) continue;
+      
+      // Inject data into fields to utilize existing render engine
+      document.getElementById('f-name').value = row[nameIdx].trim();
+      if (desigIdx !== -1 && row[desigIdx]) document.getElementById('f-desig').value = row[desigIdx].trim();
+      if (phoneIdx !== -1 && row[phoneIdx]) {
+        document.getElementById('f-phone').value = row[phoneIdx].trim();
+        formatPhone();
+      }
+      if (emailIdx !== -1 && row[emailIdx]) {
+        document.getElementById('f-email').value = row[emailIdx].trim();
+      } else {
+        handleNameInput(); // Auto-gen email if missing in CSV
+      }
+
+      // Generate the PDF for this row
+      const frontData = drawCard('renderCanvas', true);
+      const backData = drawCard('renderCanvas', false);
+      
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [3.5, 2] });
+      pdf.addImage(frontData, 'PNG', 0, 0, 3.5, 2);
+      pdf.addPage();
+      pdf.addImage(backData, 'PNG', 0, 0, 3.5, 2);
+      
+      const pdfBlob = pdf.output('blob');
+      const safeName = row[nameIdx].trim().replace(/[^a-z0-9]/gi, '_');
+      zip.file(`Snapmint_BC_${safeName}.pdf`, pdfBlob);
+      count++;
+    }
+
+    if (count > 0) {
+      const content = await zip.generateAsync({type:"blob"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(content);
+      a.download = `Snapmint_BC_Batch_${Date.now()}.zip`;
+      a.click();
+      toast(`✅ Successfully zipped ${count} business cards!`);
+    }
+    
+    // Reset file input
+    event.target.value = '';
+    renderCard(); // Render final state back to UI
+  };
+  reader.readAsText(file);
+}
+
+// --- RENDER ENGINE ---
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(/[ \n]/);
   let line = '';
   let currentY = y;
-
   for(let n = 0; n < words.length; n++) {
     const testLine = line + words[n] + ' ';
-    const metrics = ctx.measureText(testLine);
-    const testWidth = metrics.width;
-    
+    const testWidth = ctx.measureText(testLine).width;
     if (testWidth > maxWidth && n > 0) {
       ctx.fillText(line, x, currentY);
       line = words[n] + ' ';
       currentY += lineHeight;
-    } else {
-      line = testLine;
-    }
+    } else line = testLine;
   }
   ctx.fillText(line, x, currentY);
   return currentY + lineHeight; 
@@ -240,32 +427,24 @@ function drawCard(canvasId, isFront) {
     return canvas.toDataURL('image/png', 1.0);
   }
   
-  // RENDER FRONT
-  
-  // 1. Setup Font to dynamically measure the tagline width
+  // Front Right Header
   ctx.font = "400 18px Inter";
   const tagline = "Snapmint Financial Services Pvt Ltd";
   const tagWidth = ctx.measureText(tagline).width;
   
-  // 2. Logo matches tagline width exactly
   const lw = tagWidth;
   const lh = logoImg.height * (lw / logoImg.width);
-  
-  // 3. Shift further to the right corner (e.g., 60px margin)
   const rightMargin = 60; 
   const startX = 1050 - rightMargin - lw;
   const centerX = startX + (lw / 2);
 
-  // 4. Draw Logo
   ctx.drawImage(logoImg, startX, 70, lw, lh);
-  
-  // 5. Draw Tagline (Perfectly center-aligned under the logo)
   ctx.fillStyle = "#3A3A40";
   ctx.textBaseline = "top";
   ctx.textAlign = "center"; 
   ctx.fillText(tagline, centerX, 70 + lh + 14);
 
-  // Divider Line
+  // Center Divider
   ctx.beginPath();
   ctx.moveTo(560, 210);
   ctx.lineTo(560, 480);
@@ -273,21 +452,31 @@ function drawCard(canvasId, isFront) {
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  // Reset alignment for left side text
+  // Front Left Content
   ctx.textAlign = "left";
-
   const name = document.getElementById('f-name').value;
   const desig = document.getElementById('f-desig').value;
 
+  let nameSize = 68;
+  ctx.font = `800 ${nameSize}px Inter`;
+  while (ctx.measureText(name).width > 440 && nameSize > 36) {
+    nameSize -= 2;
+    ctx.font = `800 ${nameSize}px Inter`;
+  }
   ctx.fillStyle = BRAND_COLOR;
-  ctx.font = "800 68px Inter";
   ctx.textBaseline = "top";
-  let nextY = wrapText(ctx, name, 80, 230, 440, 75);
+  let nextY = wrapText(ctx, name, 80, 230, 440, nameSize + 7);
 
+  let desigSize = 30;
+  ctx.font = `600 ${desigSize}px Inter`;
+  while (ctx.measureText(desig.split('\n')[0]).width > 440 && desigSize > 20) {
+    desigSize -= 1;
+    ctx.font = `600 ${desigSize}px Inter`;
+  }
   ctx.fillStyle = "#3A3A40";
-  ctx.font = "600 30px Inter"; 
-  wrapText(ctx, desig, 80, nextY + 10, 440, 40);
+  wrapText(ctx, desig, 80, nextY + 10, 440, desigSize + 10);
 
+  // Front Right Details
   const phone = document.getElementById('f-phone').value;
   const email = document.getElementById('f-email').value;
   const web = document.getElementById('f-web').value;
@@ -299,34 +488,10 @@ function drawCard(canvasId, isFront) {
   const spacing = 55;
 
   ctx.font = "600 22px Inter";
-  
-  if(phone) {
-    drawIcon(ctx, ICONS.phone, iconX, currentInfoY);
-    ctx.fillStyle = "#000000"; 
-    ctx.fillText(phone, textX, currentInfoY + 2);
-    currentInfoY += spacing;
-  }
-  
-  if(email) {
-    drawIcon(ctx, ICONS.mail, iconX, currentInfoY);
-    ctx.fillStyle = "#000000";
-    ctx.fillText(email, textX, currentInfoY + 2);
-    currentInfoY += spacing;
-  }
-  
-  if(web) {
-    drawIcon(ctx, ICONS.globe, iconX, currentInfoY);
-    ctx.fillStyle = "#000000";
-    ctx.fillText(web, textX, currentInfoY + 2);
-    currentInfoY += spacing;
-  }
-  
-  if(addr) {
-    drawIcon(ctx, ICONS.pin, iconX, currentInfoY);
-    ctx.fillStyle = "#000000";
-    ctx.font = "500 20px Inter"; 
-    wrapText(ctx, addr, textX, currentInfoY + 2, 350, 28);
-  }
+  if(phone) { drawIcon(ctx, ICONS.phone, iconX, currentInfoY); ctx.fillStyle = "#000000"; ctx.fillText(phone, textX, currentInfoY + 2); currentInfoY += spacing; }
+  if(email) { drawIcon(ctx, ICONS.mail, iconX, currentInfoY); ctx.fillStyle = "#000000"; ctx.fillText(email, textX, currentInfoY + 2); currentInfoY += spacing; }
+  if(web) { drawIcon(ctx, ICONS.globe, iconX, currentInfoY); ctx.fillStyle = "#000000"; ctx.fillText(web, textX, currentInfoY + 2); currentInfoY += spacing; }
+  if(addr) { drawIcon(ctx, ICONS.pin, iconX, currentInfoY); ctx.fillStyle = "#000000"; ctx.font = "500 20px Inter"; wrapText(ctx, addr, textX, currentInfoY + 2, 350, 28); }
 
   return canvas.toDataURL('image/png', 1.0);
 }
@@ -338,7 +503,8 @@ function renderCard() {
 
 async function downloadPDF() {
   const btn = document.querySelector('.gen-btn');
-  btn.textContent = "⚙ Generating PDF...";
+  const ogText = btn.innerHTML;
+  btn.textContent = "⚙ Generating High-Res PDF...";
   btn.disabled = true;
 
   await new Promise(r => setTimeout(r, 50));
@@ -348,11 +514,7 @@ async function downloadPDF() {
     const backData = drawCard('renderCanvas', false);
 
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'in',
-      format: [3.5, 2]
-    });
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [3.5, 2] });
 
     pdf.addImage(frontData, 'PNG', 0, 0, 3.5, 2);
     pdf.addPage();
@@ -360,13 +522,13 @@ async function downloadPDF() {
 
     const nameStr = document.getElementById('f-name').value.replace(/\s+/g, '_') || 'Employee';
     pdf.save(`Snapmint_BC_${nameStr}.pdf`);
-    
+    toast("High-Res PDF Downloaded!");
   } catch (err) {
     console.error(err);
     alert("Error generating PDF. Please check console.");
   }
 
-  btn.textContent = "⬇ Download Print PDF";
+  btn.innerHTML = ogText;
   btn.disabled = false;
 }
 </script>
