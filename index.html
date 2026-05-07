@@ -174,7 +174,6 @@ let logoImg = new Image();
 let logoWhiteImg = new Image();
 
 window.onload = () => {
-  // Directly targeting your exact PNG files
   logoImg.src = "./Snapmint_Logo PNG.png"; 
   logoWhiteImg.src = "./Snapmint_white-logo.png"; 
   
@@ -243,24 +242,28 @@ function drawCard(canvasId, isFront) {
   
   // RENDER FRONT
   
-  // Top right logo alignment - Strictly aligned with contact icons
-  const logoX = 600;
-  let lw = 260;
-  let lh = logoImg.height * (lw / logoImg.width);
-
-  // Constraint: Prevents massive transparent padding from pushing the logo down
-  if (lh > 80) {
-    lh = 80;
-    lw = logoImg.width * (lh / logoImg.height);
-  }
-
-  ctx.drawImage(logoImg, logoX, 60, lw, lh);
+  // 1. Setup Font to dynamically measure the tagline width
+  ctx.font = "400 18px Inter";
+  const tagline = "Snapmint Financial Services Pvt Ltd";
+  const tagWidth = ctx.measureText(tagline).width;
   
+  // 2. Logo matches tagline width exactly
+  const lw = tagWidth;
+  const lh = logoImg.height * (lw / logoImg.width);
+  
+  // 3. Shift further to the right corner (e.g., 60px margin)
+  const rightMargin = 60; 
+  const startX = 1050 - rightMargin - lw;
+  const centerX = startX + (lw / 2);
+
+  // 4. Draw Logo
+  ctx.drawImage(logoImg, startX, 70, lw, lh);
+  
+  // 5. Draw Tagline (Perfectly center-aligned under the logo)
   ctx.fillStyle = "#3A3A40";
-  ctx.font = "400 17px Inter";
   ctx.textBaseline = "top";
-  ctx.textAlign = "left"; 
-  ctx.fillText("Snapmint Financial Services Pvt Ltd", logoX + 5, 60 + lh + 12);
+  ctx.textAlign = "center"; 
+  ctx.fillText(tagline, centerX, 70 + lh + 14);
 
   // Divider Line
   ctx.beginPath();
@@ -270,7 +273,7 @@ function drawCard(canvasId, isFront) {
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  // Reset alignment for left side
+  // Reset alignment for left side text
   ctx.textAlign = "left";
 
   const name = document.getElementById('f-name').value;
