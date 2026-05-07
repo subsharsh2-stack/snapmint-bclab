@@ -25,7 +25,6 @@
   --t4:       #ABABBA;
   --fire:     #FF6B2B;
   --fire2:    #FF8547;
-  --nav-w:    60px;
   --bar-h:    54px;
   --r4:8px; --r5:10px; --r6:16px; --pill:999px;
   --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
@@ -35,69 +34,33 @@
   --spring: cubic-bezier(0.34,1.56,0.64,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--page);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html,body{height:100%;background:var(--page);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:99px}
 
 /* ── LAYOUT ── */
-#shell{display:grid;grid-template-rows:var(--bar-h) 1fr;grid-template-columns:var(--nav-w) 1fr;grid-template-areas:"bar bar""nav view";height:100vh}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
-#bar{grid-area:bar;height:var(--bar-h);background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px 0 0;z-index:100}
-.bar-brand{width:var(--nav-w);height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);flex-shrink:0}
+#bar{height:var(--bar-h);background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;flex-shrink:0}
+.bar-left{display:flex;align-items:center;gap:12px;}
 .bar-logo{width:32px;height:32px;background:var(--brand);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:800;box-shadow:0 2px 8px rgba(1,71,81,0.25)}
-.bar-center{flex:1;display:flex;align-items:center;gap:12px;padding:0 20px}
 .bar-wordmark{font-size:16px;font-weight:800;letter-spacing:-0.5px}
 .bar-wordmark em{color:var(--brand);font-style:normal}
 .bar-sub{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:0.5px;padding:3px 10px;background:var(--s3);border:1px solid var(--border);border-radius:var(--pill);text-transform:uppercase}
 
-#nav{grid-area:nav;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:12px}
-.nav-icon-btn{width:40px;height:40px;border-radius:var(--r5);border:none;background:transparent;color:var(--t3);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s ease}
-.nav-icon-btn:hover{background:var(--s2);color:var(--brand)}
-.nav-icon-btn.active{background:rgba(1,71,81,0.08);color:var(--brand);box-shadow:inset 0 0 0 1px rgba(1,71,81,0.15)}
+.btn-ghost{background:none;border:none;color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color .2s}
+.btn-ghost:hover{color:var(--brand)}
 
-#view-container{grid-area:view;position:relative;overflow:hidden}
-.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity 0.3s var(--spring);display:flex;flex-direction:column;overflow-y:auto}
-.view.active{opacity:1;pointer-events:all}
-
-/* ── DASHBOARD VIEW ── */
-#dashboard{padding:48px;max-width:1200px;margin:0 auto;width:100%}
-.dash-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
-.dash-title{font-size:32px;font-weight:800;letter-spacing:-1px}
-.dash-subtitle{font-size:15px;color:var(--t3);margin-top:4px}
-.dash-actions{display:flex;gap:12px}
-
-.btn{padding:0 20px;height:44px;border-radius:var(--r5);border:none;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-primary{background:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(1,71,81,0.25)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(1,71,81,0.35);background:#025c68}
-.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border2);box-shadow:var(--sh-sm)}
-.btn-secondary:hover{background:var(--s2);border-color:var(--t4)}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
-.card-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r6);padding:24px;box-shadow:var(--sh-sm);transition:all .3s var(--spring);position:relative;cursor:pointer}
-.card-item:hover{transform:translateY(-4px);box-shadow:var(--sh-md);border-color:var(--border2)}
-.card-item .c-name{font-size:18px;font-weight:700;letter-spacing:-0.5px;color:var(--text);margin-bottom:4px}
-.card-item .c-desig{font-size:13px;color:var(--t3);font-weight:500;margin-bottom:20px}
-.card-item .c-date{font-size:11px;color:var(--t4);text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
-.card-item .c-actions{position:absolute;top:20px;right:20px;display:flex;gap:8px;opacity:0;transition:opacity .2s}
-.card-item:hover .c-actions{opacity:1}
-.icon-btn{width:32px;height:32px;border-radius:var(--r4);border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);transition:all .2s}
-.icon-btn:hover{background:var(--s2);color:var(--brand)}
-.icon-btn.delete:hover{color:red;border-color:rgba(255,0,0,0.2);background:rgba(255,0,0,0.05)}
-
-.empty-state{text-align:center;padding:80px 20px;color:var(--t3)}
-.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.5}
+#view-container{flex:1;display:flex;overflow:hidden;position:relative}
 
 /* ── EDITOR VIEW (WIZARD) ── */
-#editor{flex-direction:row;overflow:hidden}
 .wizard-panel{width:460px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:10}
-.preview-panel{flex:1;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow-y:auto}
+.preview-panel{flex:1;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px;overflow-y:auto}
 
 /* Wizard Header / Progress */
 .wiz-header{padding:32px 40px 24px;border-bottom:1px solid var(--border)}
-.wiz-back{background:none;border:none;color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:24px;transition:color .2s}
-.wiz-back:hover{color:var(--brand)}
-.progress-bar{display:flex;gap:8px;margin-top:16px}
+.progress-bar{display:flex;gap:8px}
 .prog-dot{flex:1;height:4px;background:var(--s3);border-radius:var(--pill);transition:all .4s var(--spring)}
 .prog-dot.active{background:var(--brand)}
 .prog-dot.done{background:var(--brand);opacity:0.4}
@@ -131,7 +94,14 @@ select.ctrl{appearance:none;cursor:pointer;background-image:url("data:image/svg+
 .pill:hover{background:var(--s3);border-color:var(--t3);color:var(--text)}
 
 /* Wizard Footer */
-.wiz-foot{padding:24px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;background:var(--surface);z-index:20}
+.wiz-foot{padding:24px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;background:var(--surface);z-index:20;flex-shrink:0}
+.btn{padding:0 20px;height:44px;border-radius:var(--r5);border:none;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(1,71,81,0.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(1,71,81,0.35);background:#025c68}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border2);box-shadow:var(--sh-sm)}
+.btn-secondary:hover{background:var(--s2);border-color:var(--t4)}
+.btn-download{background:#000;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.25)}
+.btn-download:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.35);background:#333}
 
 /* Canvas Display */
 .canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r6);padding:40px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:40px;align-items:center;width:100%;max-width:900px}
@@ -146,135 +116,125 @@ canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--s
 .toast.success{background:var(--brand)}
 
 #renderCanvas { display: none; }
+
+/* ── MOBILE RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  #shell { overflow: auto; }
+  #view-container { flex-direction: column; overflow: visible; }
+  .wizard-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--border); flex-shrink: 0; min-height: 500px; position: relative;}
+  .preview-panel { padding: 24px; overflow: visible; }
+  .canvas-wrap { padding: 24px; gap: 24px; }
+  .wiz-header { padding: 24px; }
+  .wiz-step { padding: 24px; }
+  .wiz-foot { padding: 16px 24px; position: sticky; bottom: 0; }
+}
 </style>
 </head>
 <body>
 <div id="shell">
 
 <div id="bar">
-  <div class="bar-brand"><div class="bar-logo">B</div></div>
-  <div class="bar-center">
+  <div class="bar-left">
+    <div class="bar-logo">B</div>
     <span class="bar-wordmark">BC<em>LAB</em></span>
     <span class="bar-sub">Pro HR OS</span>
   </div>
+  <div>
+    <button class="btn-ghost" onclick="document.getElementById('csv-upload').click()">📁 Batch Upload CSV</button>
+    <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="processCSV(event)">
+  </div>
 </div>
-
-<nav id="nav">
-  <button class="nav-icon-btn active" id="nav-dash" title="Dashboard" onclick="switchView('dashboard')">🗂</button>
-  <button class="nav-icon-btn" id="nav-create" title="Create New" onclick="createNew()">✨</button>
-</nav>
 
 <div id="view-container">
   
-  <div id="dashboard" class="view active">
-    <div class="dash-header">
-      <div>
-        <h1 class="dash-title">Card Archive</h1>
-        <div class="dash-subtitle" id="dash-count">Manage and export employee business cards.</div>
-      </div>
-      <div class="dash-actions">
-        <button class="btn btn-secondary" onclick="document.getElementById('csv-upload').click()">📁 Batch CSV</button>
-        <button class="btn btn-primary" onclick="createNew()">+ Create New</button>
-        <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="processCSV(event)">
+  <div class="wizard-panel">
+    <div class="wiz-header">
+      <div class="progress-bar">
+        <div class="prog-dot active" id="dot-1"></div>
+        <div class="prog-dot" id="dot-2"></div>
+        <div class="prog-dot" id="dot-3"></div>
       </div>
     </div>
-    <div class="grid" id="card-grid">
-      </div>
-  </div>
 
-  <div id="editor" class="view">
-    
-    <div class="wizard-panel">
-      <div class="wiz-header">
-        <button class="wiz-back" onclick="switchView('dashboard')">← Back to Archive</button>
-        <div class="progress-bar">
-          <div class="prog-dot active" id="dot-1"></div>
-          <div class="prog-dot" id="dot-2"></div>
-          <div class="prog-dot" id="dot-3"></div>
-        </div>
-      </div>
-
-      <div class="wiz-body">
+    <div class="wiz-body">
+      
+      <div class="wiz-step active" id="step-1">
+        <div class="step-title">Employee Identity</div>
+        <div class="step-sub">Who is this business card for?</div>
         
-        <div class="wiz-step active" id="step-1">
-          <div class="step-title">Employee Identity</div>
-          <div class="step-sub">Who is this business card for?</div>
-          
-          <div class="field">
-            <label class="flbl">Full Name</label>
-            <input type="text" class="ctrl" id="f-name" placeholder="e.g. Harsh Vishwakarma" oninput="handleStateChange()">
-          </div>
-          <div class="field">
-            <label class="flbl">Designation</label>
-            <textarea class="ctrl" id="f-desig" style="min-height:80px" placeholder="e.g. Key Account Associate" oninput="handleStateChange()"></textarea>
+        <div class="field">
+          <label class="flbl">Full Name</label>
+          <input type="text" class="ctrl" id="f-name" placeholder="e.g. Harsh Vishwakarma" oninput="handleStateChange()">
+        </div>
+        <div class="field">
+          <label class="flbl">Designation</label>
+          <textarea class="ctrl" id="f-desig" style="min-height:80px" placeholder="e.g. Key Account Associate" oninput="handleStateChange()"></textarea>
+        </div>
+      </div>
+
+      <div class="wiz-step" id="step-2">
+        <div class="step-title">Contact Details</div>
+        <div class="step-sub">How can clients reach them?</div>
+        
+        <div class="field">
+          <label class="flbl">Phone Number</label>
+          <input type="text" class="ctrl" id="f-phone" placeholder="+91 00000 00000" oninput="formatPhone(); handleStateChange()">
+        </div>
+        <div class="field">
+          <label class="flbl">Email Prefix</label>
+          <div class="email-input-group">
+            <input type="text" class="ctrl" id="f-email" placeholder="first.last" oninput="handleStateChange()">
+            <span class="email-suffix">@snapmint.com</span>
           </div>
         </div>
+        <div class="field">
+          <label class="flbl">Website</label>
+          <input type="text" class="ctrl" id="f-web" value="www.snapmint.com" oninput="handleStateChange()">
+        </div>
+      </div>
 
-        <div class="wiz-step" id="step-2">
-          <div class="step-title">Contact Details</div>
-          <div class="step-sub">How can clients reach them?</div>
-          
-          <div class="field">
-            <label class="flbl">Phone Number</label>
-            <input type="text" class="ctrl" id="f-phone" placeholder="+91 00000 00000" oninput="formatPhone(); handleStateChange()">
-          </div>
-          <div class="field">
-            <label class="flbl">Email Prefix</label>
-            <div class="email-input-group">
-              <input type="text" class="ctrl" id="f-email" placeholder="first.last" oninput="handleStateChange()">
-              <span class="email-suffix">@snapmint.com</span>
+      <div class="wiz-step" id="step-3">
+        <div class="step-title">Location & Style</div>
+        <div class="step-sub">Final touches before printing.</div>
+        
+        <div class="field">
+          <label class="flbl">Office Address</label>
+          <textarea class="ctrl" id="f-addr" style="min-height:90px" oninput="handleStateChange()"></textarea>
+          <div class="mem-pills" id="recent-addresses">
             </div>
-          </div>
-          <div class="field">
-            <label class="flbl">Website</label>
-            <input type="text" class="ctrl" id="f-web" value="www.snapmint.com" oninput="handleStateChange()">
-          </div>
         </div>
-
-        <div class="wiz-step" id="step-3">
-          <div class="step-title">Location & Style</div>
-          <div class="step-sub">Final touches before printing.</div>
-          
-          <div class="field">
-            <label class="flbl">Office Address</label>
-            <textarea class="ctrl" id="f-addr" style="min-height:90px" oninput="handleStateChange()"></textarea>
-            <div class="mem-pills" id="recent-addresses">
-              </div>
-          </div>
-          <div class="field" style="margin-top:32px">
-            <label class="flbl">Card Back Design</label>
-            <select class="ctrl" id="f-back" onchange="handleStateChange()">
-              <option value="dark">Solid Brand Green (#014751)</option>
-              <option value="white">Clean White Design</option>
-            </select>
-          </div>
+        <div class="field" style="margin-top:32px">
+          <label class="flbl">Card Back Design</label>
+          <select class="ctrl" id="f-back" onchange="handleStateChange()">
+            <option value="dark">Solid Brand Green (#014751)</option>
+            <option value="white">Clean White Design</option>
+          </select>
         </div>
-
       </div>
 
-      <div class="wiz-foot">
-        <button class="btn btn-secondary" id="btn-prev" onclick="prevStep()" style="visibility:hidden">Back</button>
-        <button class="btn btn-primary" id="btn-next" onclick="nextStep()" style="flex:1; margin-left:12px;">Continue →</button>
-        <button class="btn btn-primary" id="btn-finish" onclick="saveAndFinish()" style="flex:1; margin-left:12px; display:none; background:#000; color:#fff;">Save to Archive 💾</button>
-      </div>
     </div>
 
-    <div class="preview-panel">
-      <div class="canvas-wrap">
-        <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
-          <div class="canvas-lbl" style="border:none; padding:0;">Live Preview</div>
-          <button class="btn btn-secondary" style="height:32px; font-size:12px;" onclick="downloadSinglePDF()">⬇ Download PDF</button>
-        </div>
-        <div class="canvas-section">
-          <canvas id="preview-front" width="1050" height="600"></canvas>
-        </div>
-        <div class="canvas-section">
-          <canvas id="preview-back" width="1050" height="600"></canvas>
-        </div>
-      </div>
+    <div class="wiz-foot">
+      <button class="btn btn-secondary" id="btn-prev" onclick="prevStep()" style="visibility:hidden">Back</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()" style="flex:1; margin-left:12px;">Continue →</button>
+      <button class="btn btn-download" id="btn-finish" onclick="downloadFinalPDF()" style="flex:1; margin-left:12px; display:none;">⬇ Download Print PDF</button>
     </div>
-    
   </div>
+
+  <div class="preview-panel">
+    <div class="canvas-wrap">
+      <div class="canvas-section">
+        <div class="canvas-lbl">Front Preview</div>
+        <canvas id="preview-front" width="1050" height="600"></canvas>
+      </div>
+      <div class="canvas-section">
+        <div class="canvas-lbl">Back Preview</div>
+        <canvas id="preview-back" width="1050" height="600"></canvas>
+      </div>
+    </div>
+  </div>
+  
+</div>
 
 </div>
 
@@ -295,9 +255,7 @@ let logoImg = new Image();
 let logoWhiteImg = new Image();
 
 // --- STATE MANAGEMENT ---
-let dbCards = [];
 let recentAddrs = [];
-let currentId = null;
 let currentStep = 1;
 
 // --- INITIALIZATION ---
@@ -306,15 +264,15 @@ window.onload = () => {
   logoImg.src = "./Snapmint_Logo PNG.png"; 
   logoWhiteImg.src = "./Snapmint_white-logo.png"; 
   
-  // Load Database
-  const saved = localStorage.getItem('bclab_cards');
-  if(saved) dbCards = JSON.parse(saved);
-  
+  // Load Address Memory
   const addrs = localStorage.getItem('bclab_addrs');
   if(addrs) recentAddrs = JSON.parse(addrs);
   else recentAddrs = ["Unit No. B-101, 1st Floor, Tower B, Unitech Cyber Park, Sector 39, Gurugram 122003"];
 
-  renderDashboard();
+  // Pre-fill default values
+  document.getElementById('f-addr').value = recentAddrs[0] || '';
+  
+  updateWizardUI();
 
   document.fonts.ready.then(() => {
     let loaded = 0;
@@ -324,49 +282,6 @@ window.onload = () => {
     if(logoImg.complete && logoWhiteImg.complete) renderCard();
   });
 };
-
-// --- VIEW ROUTING ---
-function switchView(view) {
-  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-icon-btn').forEach(el => el.classList.remove('active'));
-  
-  document.getElementById(view).classList.add('active');
-  if(view === 'dashboard') {
-    document.getElementById('nav-dash').classList.add('active');
-    renderDashboard();
-  } else {
-    document.getElementById('nav-create').classList.add('active');
-    renderCard();
-  }
-}
-
-// --- DASHBOARD LOGIC ---
-function renderDashboard() {
-  const grid = document.getElementById('card-grid');
-  document.getElementById('dash-count').textContent = `${dbCards.length} saved cards in local storage.`;
-  
-  if (dbCards.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <div class="empty-icon">📇</div>
-        <h3>No cards created yet</h3>
-        <p style="margin-top:8px;">Click 'Create New' to start building the archive.</p>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = dbCards.sort((a,b)=>b.ts - a.ts).map(card => `
-    <div class="card-item" onclick="editCard('${card.id}')">
-      <div class="c-name">${card.name || 'Unnamed'}</div>
-      <div class="c-desig">${card.desig || 'No Designation'}</div>
-      <div class="c-date">Saved on ${new Date(card.ts).toLocaleDateString()}</div>
-      <div class="c-actions">
-        <button class="icon-btn" title="Download PDF" onclick="event.stopPropagation(); quickDownload('${card.id}')">⬇</button>
-        <button class="icon-btn delete" title="Delete" onclick="event.stopPropagation(); deleteCard('${card.id}')">✕</button>
-      </div>
-    </div>
-  `).join('');
-}
 
 // --- WIZARD LOGIC ---
 function updateWizardUI() {
@@ -404,80 +319,8 @@ function updateWizardUI() {
 function nextStep() { if(currentStep < 3) { currentStep++; updateWizardUI(); } }
 function prevStep() { if(currentStep > 1) { currentStep--; updateWizardUI(); } }
 
-function createNew() {
-  currentId = Date.now().toString();
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-desig').value = '';
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-email').value = '';
-  document.getElementById('f-web').value = 'www.snapmint.com';
-  document.getElementById('f-addr').value = recentAddrs[0] || '';
-  document.getElementById('f-back').value = 'dark';
-  
-  currentStep = 1;
-  updateWizardUI();
-  switchView('editor');
-}
-
-function editCard(id) {
-  const card = dbCards.find(c => c.id === id);
-  if(!card) return;
-  currentId = card.id;
-  
-  document.getElementById('f-name').value = card.name;
-  document.getElementById('f-desig').value = card.desig;
-  document.getElementById('f-phone').value = card.phone;
-  document.getElementById('f-email').value = card.email;
-  document.getElementById('f-web').value = card.web;
-  document.getElementById('f-addr').value = card.addr;
-  document.getElementById('f-back').value = card.back;
-  
-  currentStep = 1;
-  updateWizardUI();
-  switchView('editor');
-}
-
-function deleteCard(id) {
-  if(confirm("Are you sure you want to delete this saved card?")) {
-    dbCards = dbCards.filter(c => c.id !== id);
-    localStorage.setItem('bclab_cards', JSON.stringify(dbCards));
-    renderDashboard();
-    toast("Card deleted");
-  }
-}
-
-function saveAndFinish() {
-  // Save Address Memory
-  const addr = document.getElementById('f-addr').value.trim();
-  if (addr && !recentAddrs.includes(addr)) {
-    recentAddrs.unshift(addr);
-    if(recentAddrs.length > 5) recentAddrs.pop(); // Keep last 5
-    localStorage.setItem('bclab_addrs', JSON.stringify(recentAddrs));
-  }
-
-  const cardData = {
-    id: currentId || Date.now().toString(),
-    ts: Date.now(),
-    name: document.getElementById('f-name').value,
-    desig: document.getElementById('f-desig').value,
-    phone: document.getElementById('f-phone').value,
-    email: document.getElementById('f-email').value,
-    web: document.getElementById('f-web').value,
-    addr: document.getElementById('f-addr').value,
-    back: document.getElementById('f-back').value,
-  };
-
-  const existingIdx = dbCards.findIndex(c => c.id === cardData.id);
-  if(existingIdx >= 0) dbCards[existingIdx] = cardData;
-  else dbCards.push(cardData);
-
-  localStorage.setItem('bclab_cards', JSON.stringify(dbCards));
-  toast("Card saved to archive!");
-  switchView('dashboard');
-}
-
 function handleStateChange() {
-  // Auto-generate email structure if empty on step 1
+  // Auto-generate email structure if empty on step 1 -> 2 transition
   if (currentStep === 1) {
     const name = document.getElementById('f-name').value.trim().toLowerCase();
     const emailField = document.getElementById('f-email');
@@ -639,30 +482,39 @@ function renderCard() {
 }
 
 // --- PDF GENERATION ---
-async function downloadSinglePDF() {
-  const { jsPDF } = window.jspdf;
-  const frontData = drawCard('renderCanvas', true);
-  const backData = drawCard('renderCanvas', false);
-  const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [3.5, 2] });
-  pdf.addImage(frontData, 'PNG', 0, 0, 3.5, 2);
-  pdf.addPage();
-  pdf.addImage(backData, 'PNG', 0, 0, 3.5, 2);
-  const nameStr = document.getElementById('f-name').value.replace(/\s+/g, '_') || 'Employee';
-  pdf.save(`Snapmint_BC_${nameStr}.pdf`);
-}
+async function downloadFinalPDF() {
+  // Save Address Memory before downloading
+  const addr = document.getElementById('f-addr').value.trim();
+  if (addr && !recentAddrs.includes(addr)) {
+    recentAddrs.unshift(addr);
+    if(recentAddrs.length > 5) recentAddrs.pop(); 
+    localStorage.setItem('bclab_addrs', JSON.stringify(recentAddrs));
+  }
 
-async function quickDownload(id) {
-  const card = dbCards.find(c => c.id === id);
-  if(!card) return;
-  const { jsPDF } = window.jspdf;
-  const frontData = drawCard('renderCanvas', true, card);
-  const backData = drawCard('renderCanvas', false, card);
-  const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [3.5, 2] });
-  pdf.addImage(frontData, 'PNG', 0, 0, 3.5, 2);
-  pdf.addPage();
-  pdf.addImage(backData, 'PNG', 0, 0, 3.5, 2);
-  pdf.save(`Snapmint_BC_${card.name.replace(/\s+/g, '_')}.pdf`);
-  toast("PDF Downloaded!");
+  const btn = document.getElementById('btn-finish');
+  const ogText = btn.innerHTML;
+  btn.textContent = "⚙ Generating...";
+  btn.disabled = true;
+
+  await new Promise(r => setTimeout(r, 50));
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const frontData = drawCard('renderCanvas', true);
+    const backData = drawCard('renderCanvas', false);
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [3.5, 2] });
+    pdf.addImage(frontData, 'PNG', 0, 0, 3.5, 2);
+    pdf.addPage();
+    pdf.addImage(backData, 'PNG', 0, 0, 3.5, 2);
+    const nameStr = document.getElementById('f-name').value.replace(/\s+/g, '_') || 'Employee';
+    pdf.save(`Snapmint_BC_${nameStr}.pdf`);
+    toast("High-Res PDF Downloaded!");
+  } catch(e) {
+    alert("Error generating PDF");
+  }
+
+  btn.innerHTML = ogText;
+  btn.disabled = false;
 }
 
 function processCSV(event) {
