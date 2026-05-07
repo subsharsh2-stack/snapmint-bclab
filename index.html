@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BCLAB — The Business Card OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --brand:    #014751;
+  --page:     #F4F4F6;
+  --surface:  #FFFFFF;
+  --s2:       #F8F8FA;
+  --s3:       #F0F0F3;
+  --s4:       #E5E5EA;
+  --border:   rgba(0,0,0,0.07);
+  --border2:  rgba(0,0,0,0.11);
+  --text:     #09090B;
+  --t2:       #3A3A40;
+  --t3:       #6B6B78;
+  --t4:       #ABABBA;
+  --fire:     #FF6B2B;
+  --fire2:    #FF8547;
+  --fglow:    rgba(255,107,43,0.18);
+  --nav-w:    52px;
+  --sidebar:  320px;
+  --bar-h:    50px;
+  --r4:8px; --r5:10px; --r6:12px; --pill:999px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --sh-sm: 0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);
+  --sh-lg: 0 12px 40px rgba(0,0,0,0.12),0 4px 12px rgba(0,0,0,0.05);
+  --spring: cubic-bezier(0.34,1.56,0.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);font-size:13px;line-height:1.5;background:var(--page);color:var(--text);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:99px}
+
+/* ── SHELL ── */
+#shell{display:grid;grid-template-rows:var(--bar-h) 1fr;grid-template-columns:var(--nav-w) 1fr;grid-template-areas:"bar bar""nav view";height:100vh}
+
+/* ── TOP BAR ── */
+#bar{grid-area:bar;height:var(--bar-h);background:rgba(255,255,255,0.88);backdrop-filter:saturate(200%) blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px 0 0;z-index:90}
+.bar-brand{width:var(--nav-w);height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);flex-shrink:0}
+.bar-logo{width:30px;height:30px;background:var(--brand);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:bold;transition:transform .2s var(--spring);cursor:default;box-shadow:0 2px 8px rgba(1,71,81,0.3)}
+.bar-center{flex:1;display:flex;align-items:center;gap:10px;padding:0 18px}
+.bar-wordmark{font-size:15px;font-weight:800;letter-spacing:-0.6px;color:var(--text)}
+.bar-wordmark em{color:var(--brand);font-style:normal}
+.bar-sub{font-size:10px;font-weight:500;color:var(--t4);letter-spacing:0.3px;padding:2px 8px;background:var(--s3);border:1px solid var(--border);border-radius:var(--pill)}
+
+/* ── ICON NAV ── */
+#nav{grid-area:nav;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px}
+.nav-icon-btn{width:38px;height:38px;border-radius:var(--r5);border:none;background:var(--s3);color:var(--brand);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── VIEW AREA ── */
+#view{grid-area:view;display:flex;overflow:hidden;position:relative}
+
+/* ── STUDIO PANEL ── */
+.studio-sidebar{width:var(--sidebar);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.studio-canvas{flex:1;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;padding:40px}
+
+/* Sidebar inner */
+.sb-head{padding:18px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--s2)}
+.sb-title{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.sb-sub{font-size:11px;color:var(--t3);margin-top:2px}
+
+.sb-body{flex:1;padding:18px}
+.field{margin-bottom:14px}
+.flbl{display:block;font-size:10px;font-weight:700;color:var(--t3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.ctrl{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r4);padding:9px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:all .12s}
+.ctrl:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(1,71,81,0.1)}
+textarea.ctrl{resize:vertical;min-height:70px}
+select.ctrl{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ABABBA' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+
+.sb-foot{padding:16px 18px;border-top:1px solid var(--border);background:rgba(255,255,255,.9);backdrop-filter:blur(10px);position:sticky;bottom:0}
+.gen-btn{width:100%;height:44px;border-radius:var(--r5);border:none;background:var(--fire);color:#fff;font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .2s var(--spring);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px var(--fglow)}
+.gen-btn:hover{background:var(--fire2);transform:translateY(-1px);box-shadow:0 6px 16px var(--fglow)}
+.gen-btn:active{transform:scale(.98)}
+
+/* Canvas Preview */
+.canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r6);padding:24px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:24px;align-items:center;width:100%;max-width:800px}
+.canvas-lbl{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;text-align:center}
+canvas{width:100%;height:auto;border:1px solid var(--border2);box-shadow:var(--sh-sm);background:#fff}
+
+/* Hidden canvas for high-res rendering */
+#renderCanvas { display: none; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+<div id="bar">
+  <div class="bar-brand"><div class="bar-logo">B</div></div>
+  <div class="bar-center">
+    <span class="bar-wordmark">BC<em>LAB</em></span>
+    <span class="bar-sub">HR Online Portal</span>
+  </div>
+</div>
+
+<nav id="nav">
+  <button class="nav-icon-btn" title="Business Cards">📇</button>
+</nav>
+
+<div id="view">
+  <div class="studio-sidebar">
+    <div class="sb-head">
+      <div class="sb-title">Employee Details</div>
+      <div class="sb-sub">Live preview updates automatically</div>
+    </div>
+    <div class="sb-body">
+      
+      <div class="field">
+        <label class="flbl">Full Name</label>
+        <input type="text" class="ctrl" id="f-name" value="Harsh Vishwakarma" oninput="renderCard()">
+      </div>
+      <div class="field">
+        <label class="flbl">Designation</label>
+        <textarea class="ctrl" id="f-desig" oninput="renderCard()">Key Account Associate</textarea>
+      </div>
+      <div class="field">
+        <label class="flbl">Phone Number</label>
+        <input type="text" class="ctrl" id="f-phone" value="+91 96536 75562" oninput="renderCard()">
+      </div>
+      <div class="field">
+        <label class="flbl">Email Address</label>
+        <input type="text" class="ctrl" id="f-email" value="rawhaan.wani@snapmint.com" oninput="renderCard()">
+      </div>
+      <div class="field">
+        <label class="flbl">Website</label>
+        <input type="text" class="ctrl" id="f-web" value="www.snapmint.com" oninput="renderCard()">
+      </div>
+      <div class="field">
+        <label class="flbl">Office Address</label>
+        <textarea class="ctrl" id="f-addr" style="min-height:90px" oninput="renderCard()">Unit No. B-101, 1st Floor, Tower B, Unitech Cyber Park, Sector 39, Gurugram 122003</textarea>
+      </div>
+      <div class="field" style="margin-top:24px">
+        <label class="flbl">Card Back Design</label>
+        <select class="ctrl" id="f-back" onchange="renderCard()">
+          <option value="dark">Solid Brand Green (#014751)</option>
+          <option value="white">Clean White</option>
+        </select>
+      </div>
+    </div>
+    <div class="sb-foot">
+      <button class="gen-btn" onclick="downloadPDF()">⬇ Download Print PDF</button>
+    </div>
+  </div>
+
+  <div class="studio-canvas">
+    <div class="canvas-wrap">
+      <div>
+        <div class="canvas-lbl">Front Preview</div>
+        <canvas id="preview-front" width="1050" height="600"></canvas>
+      </div>
+      <div style="width:100%">
+        <div class="canvas-lbl">Back Preview</div>
+        <canvas id="preview-back" width="1050" height="600"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<canvas id="renderCanvas" width="1050" height="600"></canvas>
+
+<script>
+// Vector Paths for Icons
+const ICONS = {
+  phone: new Path2D("M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"),
+  mail: new Path2D("M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"),
+  globe: new Path2D("M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"),
+  pin: new Path2D("M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z")
+};
+
+const BRAND_COLOR = "#014751";
+
+// Fetching assets dynamically relative to the HTML file
+let logoImg = new Image();
+let logoWhiteImg = new Image();
+
+// Boot
+window.onload = () => {
+  logoImg.src = "./SNAPMINT.svg"; 
+  logoWhiteImg.src = "./Snapmint_white-logo.png"; 
+  
+  document.fonts.ready.then(() => {
+    // Render once images are loaded
+    let loaded = 0;
+    const checkLoad = () => {
+      loaded++;
+      if(loaded === 2) renderCard();
+    };
+    logoImg.onload = checkLoad;
+    logoWhiteImg.onload = checkLoad;
+    
+    // Safety fallback in case images load instantly
+    if(logoImg.complete && logoWhiteImg.complete) renderCard();
+  });
+};
+
+// Smart Auto-Wrapper for Canvas Text
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(/[ \n]/);
+  let line = '';
+  let currentY = y;
+
+  for(let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    const testWidth = metrics.width;
+    
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, currentY);
+      line = words[n] + ' ';
+      currentY += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, currentY);
+  return currentY + lineHeight; 
+}
+
+function drawIcon(ctx, path, x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(1.2, 1.2); 
+  ctx.strokeStyle = BRAND_COLOR;
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.stroke(path);
+  ctx.restore();
+}
+
+function drawCard(canvasId, isFront) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  
+  ctx.fillStyle = isFront ? "#FFFFFF" : (document.getElementById('f-back').value === 'dark' ? BRAND_COLOR : "#FFFFFF");
+  ctx.fillRect(0, 0, 1050, 600);
+
+  if (!isFront) {
+    const backStyle = document.getElementById('f-back').value;
+    const centerLogo = backStyle === 'dark' ? logoWhiteImg : logoImg;
+    const lw = 500; // Increased back logo size significantly
+    const lh = centerLogo.height * (lw / centerLogo.width);
+    ctx.drawImage(centerLogo, (1050 - lw)/2, (600 - lh)/2, lw, lh);
+    return canvas.toDataURL('image/png', 1.0);
+  }
+  
+  // RENDER FRONT
+  // Top right logo alignment
+  const lw = 280;
+  const lh = logoImg.height * (lw / logoImg.width);
+  const logoX = 1050 - 80 - lw; // Anchored to 80px from the right edge
+  ctx.drawImage(logoImg, logoX, 80, lw, lh);
+  
+  // Perfectly aligned subtext beneath logo
+  ctx.fillStyle = "#3A3A40";
+  ctx.font = "400 18px Inter";
+  ctx.textBaseline = "top";
+  ctx.textAlign = "left"; // Aligning left relative to the logo's starting X
+  ctx.fillText("Snapmint Financial Services Pvt Ltd", logoX + 5, 80 + lh + 12);
+
+  // Divider Line
+  ctx.beginPath();
+  ctx.moveTo(560, 210);
+  ctx.lineTo(560, 480);
+  ctx.strokeStyle = "#D1D1D6";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Reset alignment for left side
+  ctx.textAlign = "left";
+
+  const name = document.getElementById('f-name').value;
+  const desig = document.getElementById('f-desig').value;
+
+  ctx.fillStyle = BRAND_COLOR;
+  ctx.font = "800 68px Inter";
+  ctx.textBaseline = "top";
+  let nextY = wrapText(ctx, name, 80, 230, 440, 75);
+
+  ctx.fillStyle = "#3A3A40";
+  ctx.font = "600 30px Inter"; 
+  wrapText(ctx, desig, 80, nextY + 10, 440, 40);
+
+  const phone = document.getElementById('f-phone').value;
+  const email = document.getElementById('f-email').value;
+  const web = document.getElementById('f-web').value;
+  const addr = document.getElementById('f-addr').value;
+
+  let currentInfoY = 220;
+  const iconX = 600;
+  const textX = 645;
+  const spacing = 55;
+
+  ctx.font = "600 22px Inter";
+  
+  if(phone) {
+    drawIcon(ctx, ICONS.phone, iconX, currentInfoY);
+    ctx.fillStyle = "#000000"; // Pure black text
+    ctx.fillText(phone, textX, currentInfoY + 2);
+    currentInfoY += spacing;
+  }
+  
+  if(email) {
+    drawIcon(ctx, ICONS.mail, iconX, currentInfoY);
+    ctx.fillStyle = "#000000";
+    ctx.fillText(email, textX, currentInfoY + 2);
+    currentInfoY += spacing;
+  }
+  
+  if(web) {
+    drawIcon(ctx, ICONS.globe, iconX, currentInfoY);
+    ctx.fillStyle = "#000000";
+    ctx.fillText(web, textX, currentInfoY + 2);
+    currentInfoY += spacing;
+  }
+  
+  if(addr) {
+    drawIcon(ctx, ICONS.pin, iconX, currentInfoY);
+    ctx.fillStyle = "#000000";
+    ctx.font = "500 20px Inter"; 
+    wrapText(ctx, addr, textX, currentInfoY + 2, 350, 28);
+  }
+
+  return canvas.toDataURL('image/png', 1.0);
+}
+
+function renderCard() {
+  drawCard('preview-front', true);
+  drawCard('preview-back', false);
+}
+
+async function downloadPDF() {
+  const btn = document.querySelector('.gen-btn');
+  btn.textContent = "⚙ Generating PDF...";
+  btn.disabled = true;
+
+  await new Promise(r => setTimeout(r, 50));
+
+  try {
+    const frontData = drawCard('renderCanvas', true);
+    const backData = drawCard('renderCanvas', false);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'in',
+      format: [3.5, 2]
+    });
+
+    pdf.addImage(frontData, 'PNG', 0, 0, 3.5, 2);
+    pdf.addPage();
+    pdf.addImage(backData, 'PNG', 0, 0, 3.5, 2);
+
+    const nameStr = document.getElementById('f-name').value.replace(/\s+/g, '_') || 'Employee';
+    pdf.save(`Snapmint_BC_${nameStr}.pdf`);
+    
+  } catch (err) {
+    console.error(err);
+    alert("Error generating PDF. Please check console.");
+  }
+
+  btn.textContent = "⬇ Download Print PDF";
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
